@@ -9,8 +9,8 @@ from selenium.webdriver.common.keys import Keys
 
 leetcode_url = "https://leetcode.com"
 login = "/accounts/login/"
-userID = "huyi100"
-password = "huyi6723312"
+userID = ""
+password = ""
 token = ""
 
 language_dict = {'python':'py', 'cpp':'cpp', 'java':'java', 
