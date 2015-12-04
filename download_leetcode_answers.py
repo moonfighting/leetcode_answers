@@ -12,7 +12,7 @@ login = "/accounts/login/"
 userID = ""
 password = ""
 token = ""
-
+save_dir = ""
 language_dict = {'python':'py', 'cpp':'cpp', 'java':'java', 
                  'csharp':'cs','javascript':'js', 'ruby':'rb',
                  'python':'py'
@@ -100,8 +100,7 @@ def main_func():
                 if status == 'Accepted':
                     result_url = status_td.find_element_by_tag_name('a').get_attribute('href')
                     accepted_urls.append(result_url)
-            except Exception, e:
-                print problem_name 
+            except Exception, e: 
                 pass
         
         if not accepted_urls:
@@ -123,6 +122,7 @@ def get_accepted_code(driver, problem_name):
     code_languate = driver.find_element_by_id('result_language').text
     code_file_suffix = language_dict[code_languate]
     code_file_name = problem_name + '_' + run_time.replace(' ', '_') + '.' + code_file_suffix
+    os.path.join(save_dir, code_file_name)
     tab_num = 0
     right_tab = False
     code_file = open(code_file_name, 'w')
@@ -153,15 +153,26 @@ def get_accepted_code(driver, problem_name):
 
 if __name__ == '__main__':
 
-    login_url =leetcode_url + login
-    cj = cookielib.CookieJar() 
-    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj)) 
-    urllib2.install_opener(opener)
-    res = opener.open(login_url) 
-    token = ""
-    for index, item in enumerate(cj):
-        token = item.value
-    print token
+    #login_url =leetcode_url + login
+    #cj = cookielib.CookieJar() 
+    #opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj)) 
+    #urllib2.install_opener(opener)
+    #res = opener.open(login_url) 
+    #token = ""
+    #for index, item in enumerate(cj):
+    #    token = item.value
+    #print token
     #htm = get_login_html(userID, password, token, cj, opener)
     #problem_urls, problem_names = get_problem_lists(htm)
+    if len(sys.argv) < 3:
+        print "Usage: python download_leetcode_answers [user ID] [password] [save_dir]"
+        exit()
+
+
+    userID = sys.argv[1]
+    password = sys.argv[2]
+    save_dir = sys.argv[3]
+    if not os.path.exists(save_dir):
+        os.mkdir(save_dir)
+
     main_func()
