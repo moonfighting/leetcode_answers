@@ -9,43 +9,16 @@ from selenium.webdriver.common.keys import Keys
 
 leetcode_url = "https://leetcode.com"
 login = "/accounts/login/"
-userID = ""
-password = ""
-token = ""
-save_dir = ""
+#userID = ""
+#password = ""
+#save_dir = ""
 language_dict = {'python':'py', 'cpp':'cpp', 'java':'java', 
                  'csharp':'cs','javascript':'js', 'ruby':'rb',
-                 'python':'py'
-                }
-
-
-def get_login_html(userID, password, token, cookie, opener):
-    data ={"login": userID, "password" : password, "csrfmiddlewaretoken" : token }
-    postdata = urllib.urlencode(data)
-    login_url = leetcode_url + login
-
-    headers = {'Referer': "https://leetcode.com/accounts/login/",
-           'Content-Type': 'application/x-www-form-urlencoded',
-           'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:29.0) Gecko/20100101 Firefox/29.0',
-           'Host': 'leetcode.com'}
-    cookies = {
-        '_gat': '1',
-        'csrftoken': token,
-        '_ga': 'GA1.2.239090711.1445325270'
-    }
-
-    #opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
-    req = urllib2.Request(url = login_url, data = postdata, headers = headers)
-    result = opener.open(req)
-    print result.code
-    response_html = result.read()
-    return response_html
-  
+                 'python':'py'}
 
 def get_problem_lists(response_html):
     
     problem_urls = []
-    problem_names = []
     soup = BeautifulSoup(response_html)
     tbody_tag = soup.find_all('tbody')[1]
     tr_tags = tbody_tag.find_all('tr')
@@ -55,11 +28,11 @@ def get_problem_lists(response_html):
                 problem_url = leetcode_url + str(td_tag.a['href'])
                 problem_title = str(td_tag.a.string)
                 problem_urls.append(problem_url)
-                problem_names.append(problem_title)
+                
     
-    return problem_urls, problem_names
+    return problem_urls
 
-def main_func():
+def main_func(userID, password, save_dir):
    
     login_url = leetcode_url + login
 
@@ -75,7 +48,7 @@ def main_func():
     submin_button = driver.find_element_by_xpath('//div[@class="form-group"]/button')
     submin_button.click()                             #login                               
     htm = driver.page_source.encode('utf-8')
-    problem_urls, problem_names = get_problem_lists(htm) # get problem list
+    problem_urls = get_problem_lists(htm) # get problem list
     problem_urls = problem_urls[0: 100: 10]
     for problem_url in problem_urls:
         problem_name = problem_url.split('/')[-2]
@@ -153,26 +126,15 @@ def get_accepted_code(driver, problem_name):
 
 if __name__ == '__main__':
 
-    #login_url =leetcode_url + login
-    #cj = cookielib.CookieJar() 
-    #opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj)) 
-    #urllib2.install_opener(opener)
-    #res = opener.open(login_url) 
-    #token = ""
-    #for index, item in enumerate(cj):
-    #    token = item.value
-    #print token
-    #htm = get_login_html(userID, password, token, cj, opener)
-    #problem_urls, problem_names = get_problem_lists(htm)
     if len(sys.argv) < 3:
         print "Usage: python download_leetcode_answers [user ID] [password] [save_dir]"
         exit()
 
 
-    userID = sys.argv[1]
+    user_ID = sys.argv[1]
     password = sys.argv[2]
     save_dir = sys.argv[3]
     if not os.path.exists(save_dir):
         os.mkdir(save_dir)
 
-    main_func()
+    main_func(user_ID, password, save_dir)
